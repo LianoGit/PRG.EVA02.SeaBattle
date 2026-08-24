@@ -17,6 +17,9 @@
             <dt class="col-sm-3">Player</dt>
             <dd class="col-sm-9">@Model.PlayerName</dd>
 
+            <dt class="col-sm-3">PlayerName</dt>
+            <dd class="col-sm-9">@(Model.Game?.PlayerName ?? "-")</dd>
+
             <dt class="col-sm-3">Location</dt>
             <dd class="col-sm-9">@($"{Model.LocationLetter} / {Model.LocationNumber}")</dd>
 

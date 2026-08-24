@@ -2,10 +2,19 @@
 
 @{
     ViewData["Title"] = "Index";
+    int? selectedGameId = ViewData["GameId"] == null ? null : Convert.ToInt32(ViewData["GameId"]);
 }
 
 <div class="container mt-4">
-    <h1>Index</h1>
+    <h1>Game Logs</h1>
+
+    @if (selectedGameId.HasValue)
+    {
+        <p>
+            Logs voor game @selectedGameId.Value |
+            <a asp-controller="Games" asp-action="Index">Terug naar games</a>
+        </p>
+    }
 
     @if (Model == null || !Model.Any())
     {
@@ -30,7 +39,7 @@
                 {
                     <tr>
                         <td>@item.GameId</td>
-                        <td>@item.PlayerName</td>
+                        <td>@(item.Game?.PlayerName ?? item.PlayerName)</td>
                         <td>@item.LocationNumber</td>
                         <td>@item.LocationLetter</td>
                         <td>

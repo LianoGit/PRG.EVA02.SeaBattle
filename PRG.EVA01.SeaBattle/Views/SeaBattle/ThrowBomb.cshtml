@@ -1,3 +1,5 @@
+@model PRG.EVA01.SeaBattle.Models.Game
+
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Throw Bomb";
@@ -13,10 +15,26 @@
 <h1>SeaBattle</h1>
 
 <ul>
-    <li>Game id: @Model.Id</li>
-    <li>Speler: @Model.PlayerName</li>
-    <li>Gestart met spelen: @Model.StartedPlayingOn</li>
+    <li>Game id: @Model!.Id</li>
+    <li>PlayerName: @Model!.PlayerName</li>
+    <li>Gestart met spelen: @Model!.StartedPlayingOn</li>
 </ul>
+
+<form asp-action="ThrowBomb" asp-route-gameId="@Model!.Id" method="post" class="row g-2 mb-3">
+    @Html.AntiForgeryToken()
+    <div class="col-sm-3">
+        <label for="letter" class="form-label">Letter (A-T)</label>
+        <input id="letter" name="letter" class="form-control" maxlength="1" required />
+    </div>
+    <div class="col-sm-3">
+        <label for="number" class="form-label">Nummer (1-10)</label>
+        <input id="number" name="number" type="number" min="1" max="10" class="form-control" required />
+    </div>
+    <div class="col-sm-6 align-self-end">
+        <button type="submit" class="btn btn-primary">Gooi bom</button>
+        <a asp-controller="Games" asp-action="Index" class="btn btn-outline-secondary">Stop met spelen</a>
+    </div>
+</form>
 
 <h3>Bom info:</h3>
 <ul>

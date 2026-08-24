@@ -16,6 +16,9 @@
                 <dd class="col-sm-8">@Model.GameId</dd>
 
                 <dt class="col-sm-4">PlayerName</dt>
+                <dd class="col-sm-8">@(Model.Game?.PlayerName ?? Model.PlayerName)</dd>
+
+                <dt class="col-sm-4">PlayerName</dt>
                 <dd class="col-sm-8">@Model.PlayerName</dd>
 
                 <dt class="col-sm-4">LocationNumber</dt>
@@ -41,7 +44,7 @@
             <div class="mt-3">
                 @* GameLogsController has Delete and Index actions; Edit not implemented in controller so omitted *@
                 <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-link">Delete</a>
-                <a asp-action="Index" class="btn btn-link">Back to List</a>
+                <a asp-action="Index" asp-route-gameId="@Model.GameId" class="btn btn-link">Back to List</a>
             </div>
         </div>
     </div>

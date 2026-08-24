@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PRG.EVA01.SeaBattle.Data;
+using PRG.EVA01.SeaBattle.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 var conn = builder.Configuration.GetConnectionString("SeaBattle");
 builder.Services.AddDbContext<SeaBattleDbContext>(options =>
     options.UseSqlServer(conn));
+
+builder.Services.AddScoped<ISeaBattleService, SeaBattleService>();
+builder.Services.AddScoped<IDataService, DataService>();
 
 builder.Services.AddControllersWithViews();
 
@@ -29,13 +33,13 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "seaBattleThrowBomb",
-    pattern: "SeaBattle/ThrowBomb/{letter?}/{number?}",
+    pattern: "SeaBattle/{gameId:int}/ThrowBomb/{letter?}/{number?}",
     defaults: new { controller = "SeaBattle", action = "ThrowBomb" }
 );
 
 app.MapControllerRoute(
     name: "seaBattleThrowBombs",
-    pattern: "SeaBattle/ThrowBombs/{letter?}/{number?}",
+    pattern: "SeaBattle/{gameId:int}/ThrowBombs/{letter?}/{number?}",
     defaults: new { controller = "SeaBattle", action = "ThrowBomb" }
 );
 
