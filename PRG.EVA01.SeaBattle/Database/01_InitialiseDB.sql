@@ -1,0 +1,9 @@
+CREATE TABLE GameLogs (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    GameId INT NOT NULL,
+    PlayerName NVARCHAR(100) NOT NULL,
+    LocationLetter CHAR(1) NOT NULL,
+    LocationNumber INT NOT NULL,
+    Result NVARCHAR(20) NOT NULL,
+    CreatedOn DATETIME2 NOT NULL DEFAULT GETDATE()
+);
