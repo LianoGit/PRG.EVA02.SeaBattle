@@ -11,6 +11,9 @@ namespace PRG.EVA01.SeaBattle.Models
         [Column("GameName")]
         public string PlayerName { get; set; } = string.Empty;
 
+        // Links a game to the authenticated user for ownership checks.
+        public string? UserId { get; set; }
+
         public DateTime StartedPlayingOn { get; set; } = DateTime.Now;
         public List<Boat> Boats { get; set; } = new List<Boat>();
         public List<GameLog> GameLogs { get; set; } = new List<GameLog>();

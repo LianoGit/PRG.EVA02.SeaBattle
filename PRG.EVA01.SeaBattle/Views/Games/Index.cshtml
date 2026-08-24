@@ -32,8 +32,9 @@
                 @Html.DisplayFor(modelItem => item.PlayerName)
             </td>
             <td>
-                <a asp-controller="SeaBattle" asp-action="ThrowBomb" asp-route-gameId="@item.Id">Edit</a> |
-                <a asp-controller="SeaBattle" asp-action="ThrowBomb" asp-route-gameId="@item.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-controller="SeaBattle" asp-action="ThrowBomb" asp-route-gameId="@item.Id">Play</a> |
                 <a asp-controller="GameLogs" asp-action="Index" asp-route-gameId="@item.Id">Logs</a>
             </td>
         </tr>

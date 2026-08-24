@@ -1,10 +1,13 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRG.EVA01.SeaBattle.Models;
 using PRG.EVA01.SeaBattle.Services;
 
 namespace PRG.EVA01.SeaBattle.Controllers
 {
+    [Authorize(Roles = "Player,Administrator")]
     public class GamesController : Controller
     {
         private readonly IDataService _dataService;
@@ -16,8 +19,68 @@ namespace PRG.EVA01.SeaBattle.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var games = await _dataService.GetGamesAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var games = await _dataService.GetGamesAsync(userId, isAdmin);
             return View(games);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var game = await _dataService.GetGameByIdAsync(id, userId, isAdmin);
+            if (game == null)
+            {
+                return Forbid();
+            }
+
+            return View(game);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var game = await _dataService.GetGameByIdAsync(id, userId, isAdmin);
+            if (game == null)
+            {
+                return Forbid();
+            }
+
+            return View(game);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,PlayerName")] Game game)
+        {
+            if (id != game.Id)
+            {
+                return NotFound();
+            }
+
+            if (string.IsNullOrWhiteSpace(game.PlayerName))
+            {
+                ModelState.AddModelError(nameof(Game.PlayerName), "PlayerName is required.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(game);
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var updated = await _dataService.UpdateGameNameAsync(id, game.PlayerName, userId, isAdmin);
+            if (!updated)
+            {
+                return Forbid();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -40,7 +103,13 @@ namespace PRG.EVA01.SeaBattle.Controllers
                 return View(game);
             }
 
-            var createdGame = await _dataService.CreateGameWithBoatsAsync(game.PlayerName, 6);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Challenge();
+            }
+
+            var createdGame = await _dataService.CreateGameWithBoatsAsync(game.PlayerName, userId, 6);
             return RedirectToAction("ThrowBomb", "SeaBattle", new { gameId = createdGame.Id });
         }
     }

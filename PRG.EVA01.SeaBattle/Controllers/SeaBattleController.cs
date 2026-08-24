@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRG.EVA01.SeaBattle.Services;
 
 namespace PRG.EVA01.SeaBattle.Controllers
 {
+    [Authorize(Roles = "Player,Administrator")]
     public class SeaBattleController : Controller
     {
         private readonly ISeaBattleService _seaBattleService;
@@ -21,10 +24,12 @@ namespace PRG.EVA01.SeaBattle.Controllers
         [HttpGet]
         public async Task<IActionResult> ThrowBomb(int gameId)
         {
-            var result = await _seaBattleService.PrepareThrowBombAsync(gameId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var result = await _seaBattleService.PrepareThrowBombAsync(gameId, userId, isAdmin);
             if (result == null)
             {
-                return NotFound();
+                return Forbid();
             }
 
             ApplyThrowBombViewData(result);
@@ -36,10 +41,12 @@ namespace PRG.EVA01.SeaBattle.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThrowBomb(int gameId, string letter, string number)
         {
-            var result = await _seaBattleService.ThrowBombAsync(gameId, letter, number);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var result = await _seaBattleService.ThrowBombAsync(gameId, letter, number, userId, isAdmin);
             if (result == null)
             {
-                return NotFound();
+                return Forbid();
             }
 
             ApplyThrowBombViewData(result);

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRG.EVA01.SeaBattle.Data;
 
@@ -11,9 +12,11 @@ using PRG.EVA01.SeaBattle.Data;
 namespace PRG.EVA01.SeaBattle.Migrations
 {
     [DbContext(typeof(SeaBattleDbContext))]
-    partial class SeaBattleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260824134825_RemoveUnusedIdentitySchema")]
+    partial class RemoveUnusedIdentitySchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

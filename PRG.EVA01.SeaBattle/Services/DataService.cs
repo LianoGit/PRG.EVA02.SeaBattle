@@ -16,19 +16,43 @@ namespace PRG.EVA01.SeaBattle.Services
             _httpClient = new HttpClient { BaseAddress = new Uri("https://mgp32-api.azurewebsites.net/") };
         }
 
-        public async Task<List<Game>> GetGamesAsync()
+        public async Task<List<Game>> GetGamesAsync(string? userId, bool isAdmin)
         {
-            return await _context.Games
+            var query = _context.Games
                 .Include(g => g.Boats)
+                .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(g => g.UserId == userId);
+            }
+
+            return await query
                 .OrderByDescending(g => g.StartedPlayingOn)
                 .ToListAsync();
         }
 
-        public async Task<Game> CreateGameWithBoatsAsync(string playerName, int boatCount)
+        public async Task<Game?> GetGameByIdAsync(int id, string? userId, bool isAdmin)
+        {
+            var query = _context.Games
+                .Include(g => g.Boats)
+                .ThenInclude(b => b.Location)
+                .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(g => g.UserId == userId);
+            }
+
+            return await query.FirstOrDefaultAsync(g => g.Id == id);
+        }
+
+        public async Task<Game> CreateGameWithBoatsAsync(string playerName, string userId, int boatCount)
         {
             var game = new Game
             {
                 PlayerName = playerName,
+                UserId = userId,
                 StartedPlayingOn = DateTime.Now
             };
 
@@ -36,6 +60,24 @@ namespace PRG.EVA01.SeaBattle.Services
             await _context.SaveChangesAsync();
             await CreateBoatsForGameAsync(game.Id, boatCount);
             return game;
+        }
+
+        public async Task<bool> UpdateGameNameAsync(int id, string playerName, string? userId, bool isAdmin)
+        {
+            var game = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
+            if (game == null)
+            {
+                return false;
+            }
+
+            if (!isAdmin && game.UserId != userId)
+            {
+                return false;
+            }
+
+            game.PlayerName = playerName;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<Boat>> GetBoatsAsync()
@@ -139,11 +181,16 @@ namespace PRG.EVA01.SeaBattle.Services
             return true;
         }
 
-        public async Task<List<GameLog>> GetGameLogsAsync(int? gameId)
+        public async Task<List<GameLog>> GetGameLogsAsync(int? gameId, string? userId, bool isAdmin)
         {
             var query = _context.GameLogs
                 .Include(gl => gl.Game)
                 .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(gl => gl.Game.UserId == userId);
+            }
 
             if (gameId.HasValue)
             {
@@ -155,16 +202,32 @@ namespace PRG.EVA01.SeaBattle.Services
                 .ToListAsync();
         }
 
-        public async Task<GameLog?> GetGameLogByIdAsync(int id)
+        public async Task<GameLog?> GetGameLogByIdAsync(int id, string? userId, bool isAdmin)
         {
-            return await _context.GameLogs
+            var query = _context.GameLogs
                 .Include(gl => gl.Game)
-                .FirstOrDefaultAsync(gl => gl.Id == id);
+                .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(gl => gl.Game.UserId == userId);
+            }
+
+            return await query.FirstOrDefaultAsync(gl => gl.Id == id);
         }
 
-        public async Task<bool> DeleteGameLogAsync(int id)
+        public async Task<bool> DeleteGameLogAsync(int id, string? userId, bool isAdmin)
         {
-            var gameLog = await _context.GameLogs.FindAsync(id);
+            var query = _context.GameLogs
+                .Include(gl => gl.Game)
+                .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(gl => gl.Game.UserId == userId);
+            }
+
+            var gameLog = await query.FirstOrDefaultAsync(gl => gl.Id == id);
             if (gameLog == null)
             {
                 return false;
@@ -178,11 +241,6 @@ namespace PRG.EVA01.SeaBattle.Services
         public async Task<List<Game>> GetGamesForSelectAsync()
         {
             return await _context.Games.OrderBy(g => g.Id).ToListAsync();
-        }
-
-        public async Task<List<Location>> GetLocationsForSelectAsync()
-        {
-            return await _context.Locations.OrderBy(l => l.Id).ToListAsync();
         }
 
         private async Task CreateBoatsForGameAsync(int gameId, int amount)
@@ -236,7 +294,7 @@ namespace PRG.EVA01.SeaBattle.Services
                 }
                 catch
                 {
-                    // Ignore transient HTTP/API failures and continue until we have enough boats.
+                    // api is flaky sometimes, just try again
                 }
             }
 

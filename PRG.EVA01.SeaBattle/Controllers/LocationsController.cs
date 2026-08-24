@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PRG.EVA01.SeaBattle.Models;
@@ -6,6 +7,7 @@ using PRG.EVA01.SeaBattle.Services;
 
 namespace PRG.EVA01.SeaBattle.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class LocationsController : Controller
     {
         private readonly IDataService _dataService;

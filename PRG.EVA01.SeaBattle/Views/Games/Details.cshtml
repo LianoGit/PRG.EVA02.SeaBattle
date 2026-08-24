@@ -1,0 +1,31 @@
+@model PRG.EVA01.SeaBattle.Models.Game
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Game</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StartedPlayingOn)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.StartedPlayingOn)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PlayerName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PlayerName)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-controller="SeaBattle" asp-action="ThrowBomb" asp-route-gameId="@Model.Id">Play</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
