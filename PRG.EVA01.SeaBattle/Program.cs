@@ -28,11 +28,16 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "seaBattle",
-    pattern: "SeaBattle/ThrowBomb/{letter}/{number}",
+    name: "seaBattleThrowBomb",
+    pattern: "SeaBattle/ThrowBomb/{letter?}/{number?}",
     defaults: new { controller = "SeaBattle", action = "ThrowBomb" }
 );
 
+app.MapControllerRoute(
+    name: "seaBattleThrowBombs",
+    pattern: "SeaBattle/ThrowBombs/{letter?}/{number?}",
+    defaults: new { controller = "SeaBattle", action = "ThrowBomb" }
+);
 
 app.MapControllerRoute(
     name: "default",
