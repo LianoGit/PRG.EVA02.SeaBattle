@@ -5,14 +5,16 @@ using PRG.EVA01.SeaBattle.Models;
 using PRG.EVA01.SeaBattle.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-// hardcoded admin for school demo stuff
+
+// hardcoded admin email to make sure there is always an admin acc
 const string AdminEmail = "caekebeke.liano@gmail.com";
 
-// register EF Core DbContext using connection string named "SeaBattle"
+// connect DB with ConnectionString "SeaBattle"
 var conn = builder.Configuration.GetConnectionString("SeaBattle");
 builder.Services.AddDbContext<SeaBattleDbContext>(options =>
     options.UseSqlServer(conn));
 
+// Cookies bcs i am tired of logging in
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -79,6 +81,7 @@ static async Task SeedAdminUserAsync(IServiceProvider services, string adminEmai
         return;
     }
 
+// Do we have a user table?
     var usersTableCount = await context.Database
         .SqlQueryRaw<int>("SELECT COUNT(*) AS [Value] FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users'")
         .SingleAsync();
@@ -91,9 +94,12 @@ static async Task SeedAdminUserAsync(IServiceProvider services, string adminEmai
         return;
     }
 
+// Do we have a user with the admin email?
     var normalizedEmail = adminEmail.Trim().ToUpperInvariant();
     var adminUser = await context.Users.FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail);
 
+
+// if no admin ... make one
     if (adminUser == null)
     {
         // quick bootstrap user so i dont get locked out
@@ -104,7 +110,7 @@ static async Task SeedAdminUserAsync(IServiceProvider services, string adminEmai
             Role = "Administrator"
         };
 
-        adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "admin");
+        adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "testing");
         context.Users.Add(adminUser);
         await context.SaveChangesAsync();
         return;

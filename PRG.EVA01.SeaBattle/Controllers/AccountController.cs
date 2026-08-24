@@ -24,6 +24,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             _passwordHasher = new PasswordHasher<AppUser>();
         }
 
+// GET: Account/Login
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
@@ -32,6 +33,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(new LoginViewModel());
         }
 
+// POST: Account/Login
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -68,6 +70,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(model);
         }
 
+// GET: Account/Register
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Register()
@@ -75,6 +78,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(new RegisterViewModel());
         }
 
+// POST: Account/Register
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -110,6 +114,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+// Post logout
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -125,6 +130,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+// Sign in the user by creating a claims principal and signing in with cookie authentication
         private async Task SignInAsync(AppUser user)
         {
             var claims = new List<Claim>

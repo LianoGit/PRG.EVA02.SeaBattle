@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PRG.EVA01.SeaBattle.Models;
 
+
+// basically a middle man between DB and code
 namespace PRG.EVA01.SeaBattle.Data
 {
     public class SeaBattleDbContext : DbContext
