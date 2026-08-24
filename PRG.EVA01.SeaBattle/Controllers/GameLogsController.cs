@@ -1,10 +1,13 @@
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRG.EVA01.SeaBattle.Services;
 
 namespace PRG.EVA01.SeaBattle.Controllers
 {
+    [Authorize(Roles = "Player,Administrator")]
     public class GameLogsController : Controller
     {
         private readonly IDataService _dataService;
@@ -22,7 +25,9 @@ namespace PRG.EVA01.SeaBattle.Controllers
                 ViewData["GameId"] = gameId.Value;
             }
 
-            var logs = await _dataService.GetGameLogsAsync(gameId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var logs = await _dataService.GetGameLogsAsync(gameId, userId, isAdmin);
 
             return View(logs);
         }
@@ -32,8 +37,10 @@ namespace PRG.EVA01.SeaBattle.Controllers
         {
             if (id == null) return NotFound();
 
-            var gameLog = await _dataService.GetGameLogByIdAsync(id.Value);
-            if (gameLog == null) return NotFound();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var gameLog = await _dataService.GetGameLogByIdAsync(id.Value, userId, isAdmin);
+            if (gameLog == null) return Forbid();
 
             return View(gameLog);
         }
@@ -43,8 +50,10 @@ namespace PRG.EVA01.SeaBattle.Controllers
         {
             if (id == null) return NotFound();
 
-            var gameLog = await _dataService.GetGameLogByIdAsync(id.Value);
-            if (gameLog == null) return NotFound();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var gameLog = await _dataService.GetGameLogByIdAsync(id.Value, userId, isAdmin);
+            if (gameLog == null) return Forbid();
 
             return View(gameLog);
         }
@@ -54,7 +63,14 @@ namespace PRG.EVA01.SeaBattle.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _dataService.DeleteGameLogAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Administrator");
+            var deleted = await _dataService.DeleteGameLogAsync(id, userId, isAdmin);
+            if (!deleted)
+            {
+                return Forbid();
+            }
+
             return RedirectToAction(nameof(Index));
         }
     }

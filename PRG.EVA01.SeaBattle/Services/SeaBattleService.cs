@@ -13,9 +13,9 @@ namespace PRG.EVA01.SeaBattle.Services
             _context = context;
         }
 
-        public async Task<ThrowBombResult?> PrepareThrowBombAsync(int gameId)
+        public async Task<ThrowBombResult?> PrepareThrowBombAsync(int gameId, string? userId, bool isAdmin)
         {
-            var game = await GetGameAsync(gameId);
+            var game = await GetGameAsync(gameId, userId, isAdmin);
             if (game == null)
             {
                 return null;
@@ -31,9 +31,9 @@ namespace PRG.EVA01.SeaBattle.Services
             };
         }
 
-        public async Task<ThrowBombResult?> ThrowBombAsync(int gameId, string? letter, string? number)
+        public async Task<ThrowBombResult?> ThrowBombAsync(int gameId, string? letter, string? number, string? userId, bool isAdmin)
         {
-            var game = await GetGameAsync(gameId);
+            var game = await GetGameAsync(gameId, userId, isAdmin);
             if (game == null)
             {
                 return null;
@@ -98,12 +98,19 @@ namespace PRG.EVA01.SeaBattle.Services
             return baseResult;
         }
 
-        private async Task<Game?> GetGameAsync(int gameId)
+        private async Task<Game?> GetGameAsync(int gameId, string? userId, bool isAdmin)
         {
-            return await _context.Games
+            var query = _context.Games
                 .Include(g => g.Boats)
                 .ThenInclude(b => b.Location)
-                .FirstOrDefaultAsync(g => g.Id == gameId);
+                .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(g => g.UserId == userId);
+            }
+
+            return await query.FirstOrDefaultAsync(g => g.Id == gameId);
         }
 
         private static ThrowBombResult SetIllegalAttempt(ThrowBombResult result)

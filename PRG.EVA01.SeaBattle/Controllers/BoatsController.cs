@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using PRG.EVA01.SeaBattle.Services;
 
 namespace PRG.EVA01.SeaBattle.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class BoatsController : Controller
     {
         private readonly IDataService _dataService;

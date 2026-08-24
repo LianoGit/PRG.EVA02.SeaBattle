@@ -7,6 +7,7 @@ namespace PRG.EVA01.SeaBattle.Data
     {
         public SeaBattleDbContext(DbContextOptions<SeaBattleDbContext> options) : base(options) { }
 
+        public DbSet<AppUser> Users { get; set; } = null!;
         public DbSet<Game> Games { get; set; } = null!;
         public DbSet<Boat> Boats { get; set; } = null!;
         public DbSet<Location> Locations { get; set; } = null!;
@@ -14,12 +15,24 @@ namespace PRG.EVA01.SeaBattle.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<AppUser>()
+                .ToTable("Users");
+
+            modelBuilder.Entity<AppUser>()
+                .HasIndex(u => u.NormalizedEmail)
+                .IsUnique();
 
             modelBuilder.Entity<Game>()
                 .Property(g => g.PlayerName)
                 .HasColumnName("GameName")
                 .HasMaxLength(100);
+
+            modelBuilder.Entity<Game>()
+                .Property(g => g.UserId)
+                .HasMaxLength(450);
+
+            modelBuilder.Entity<Game>()
+                .HasIndex(g => g.UserId);
 
             modelBuilder.Entity<Game>()
                 .HasMany(g => g.Boats)
