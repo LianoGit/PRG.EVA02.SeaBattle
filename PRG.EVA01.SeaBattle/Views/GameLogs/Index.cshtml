@@ -1,0 +1,55 @@
+@model IEnumerable<PRG.EVA01.SeaBattle.Models.GameLog>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container mt-4">
+    <h1>Index</h1>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">No game logs found.</div>
+    }
+    else
+    {
+        <table class="table table-striped table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>GameId</th>
+                    <th>PlayerName</th>
+                    <th>LocationNumber</th>
+                    <th>LocationLetter</th>
+                    <th>Result</th>
+                    <th>CreatedOn</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.GameId</td>
+                        <td>@item.PlayerName</td>
+                        <td>@item.LocationNumber</td>
+                        <td>@item.LocationLetter</td>
+                        <td>
+                            @{
+                                var result = item.Result ?? "";
+                                var css = result.ToUpperInvariant().Contains("HIT") ? "text-success" :
+                                          result.ToUpperInvariant().Contains("MISS") ? "text-warning" : "text-muted";
+                            }
+                            <span class="@css">@result</span>
+                        </td>
+                        <td>@(item.CreatedOn.ToString("dd/MM/yyyy H:mm:ss"))</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            <span class="mx-1">|</span>
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

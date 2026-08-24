@@ -1,0 +1,50 @@
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Throw Bomb";
+
+    var message = ViewData["ThrowBombMessage"] as string ?? string.Empty;
+    var statusClass = ViewData["ThrowBombStatusClass"] as string ?? string.Empty;
+    var location = ViewData["Location"]?.ToString() ?? "";
+    var sunkCount = ViewData["SunkCount"]?.ToString() ?? "0";
+
+    var boats = Model?.Boats ?? Enumerable.Empty<Boat>();
+}
+
+<h1>SeaBattle</h1>
+
+<ul>
+    <li>Game id: @Model.Id</li>
+    <li>Speler: @Model.PlayerName</li>
+    <li>Gestart met spelen: @Model.StartedPlayingOn</li>
+</ul>
+
+<h3>Bom info:</h3>
+<ul>
+    <li>Locatie: @location</li>
+    <li>Resultaat: <span class="@statusClass">@message</span></li>
+    <li>Aantal gezonken boten: @sunkCount</li>
+</ul>
+
+
+<h3>Boats (current)</h3>
+
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Letter</th>
+                <th>Number</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in boats)
+            {
+                var statusCss = b.Status == BoatStatus.Sunk ? "text-danger" : "text-muted";
+                <tr>
+                    <td>@(b.Location?.Letter ?? "-")</td>
+                    <td>@(b.Location?.Number ?? "-")</td>
+                    <td class="@statusCss">@b.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>

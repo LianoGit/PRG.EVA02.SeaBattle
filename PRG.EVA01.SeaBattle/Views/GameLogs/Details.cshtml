@@ -1,0 +1,48 @@
+@model PRG.EVA01.SeaBattle.Models.GameLog
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container mt-4">
+    <h1>Details</h1>
+    <h4>GameLog</h4>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-4">GameId</dt>
+                <dd class="col-sm-8">@Model.GameId</dd>
+
+                <dt class="col-sm-4">PlayerName</dt>
+                <dd class="col-sm-8">@Model.PlayerName</dd>
+
+                <dt class="col-sm-4">LocationNumber</dt>
+                <dd class="col-sm-8">@Model.LocationNumber</dd>
+
+                <dt class="col-sm-4">LocationLetter</dt>
+                <dd class="col-sm-8">@Model.LocationLetter</dd>
+
+                <dt class="col-sm-4">Result</dt>
+                <dd class="col-sm-8">
+                    @{
+                        var result = Model.Result ?? "";
+                        var css = result.ToUpperInvariant().Contains("HIT") ? "text-success" :
+                                  result.ToUpperInvariant().Contains("MISS") ? "text-warning" : "text-muted";
+                    }
+                    <span class="@css">@result</span>
+                </dd>
+
+                <dt class="col-sm-4">CreatedOn</dt>
+                <dd class="col-sm-8">@Model.CreatedOn.ToString("dd/MM/yyyy H:mm:ss")</dd>
+            </dl>
+
+            <div class="mt-3">
+                @* GameLogsController has Delete and Index actions; Edit not implemented in controller so omitted *@
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-link">Delete</a>
+                <a asp-action="Index" class="btn btn-link">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
