@@ -1,4 +1,8 @@
-admin
+admin:
+    - caekebeke.liano@gmail.com   
+    - testing
 
-caekebeke.liano@gmail.com   
-testing
+
+To start 
+ -> cd PRG.EVA01.SeaBattle
+ -> dotnet watch run

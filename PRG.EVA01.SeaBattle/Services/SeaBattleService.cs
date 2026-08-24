@@ -13,6 +13,8 @@ namespace PRG.EVA01.SeaBattle.Services
             _context = context;
         }
 
+// Preparing for starting to play the game and throw bombs.
+// Does the game exist? if yes return the info needed to start throwing bombs 
         public async Task<ThrowBombResult?> PrepareThrowBombAsync(int gameId, string? userId, bool isAdmin)
         {
             var game = await GetGameAsync(gameId, userId, isAdmin);
@@ -31,6 +33,7 @@ namespace PRG.EVA01.SeaBattle.Services
             };
         }
 
+// Throwing a bomb at a location in the game.
         public async Task<ThrowBombResult?> ThrowBombAsync(int gameId, string? letter, string? number, string? userId, bool isAdmin)
         {
             var game = await GetGameAsync(gameId, userId, isAdmin);
@@ -38,7 +41,7 @@ namespace PRG.EVA01.SeaBattle.Services
             {
                 return null;
             }
-
+// normalise letter and number
             var displayLetter = letter?.ToUpperInvariant() ?? string.Empty;
             var displayNumber = number ?? string.Empty;
 
@@ -48,11 +51,12 @@ namespace PRG.EVA01.SeaBattle.Services
                 Location = $"{displayLetter} / {displayNumber}"
             };
 
+// valid letter?
             if (!IsValidLetter(displayLetter))
             {
                 return SetIllegalAttempt(baseResult);
             }
-
+//valid number?
             if (!IsValidNumber(number, out var numberValue))
             {
                 return SetIllegalAttempt(baseResult);
@@ -61,12 +65,15 @@ namespace PRG.EVA01.SeaBattle.Services
             var normalizedNumber = numberValue.ToString();
             baseResult.Location = $"{displayLetter} / {normalizedNumber}";
 
+// is there a boat at that location? if not stay null
             var hitBoat = game.Boats.FirstOrDefault(boat =>
                 boat.Location.Letter == displayLetter &&
                 boat.Location.Number == normalizedNumber &&
                 boat.Status == BoatStatus.Active);
 
             string result;
+
+// if not null WE HIT IT
             if (hitBoat != null)
             {
                 hitBoat.Status = BoatStatus.Sunk;
@@ -80,7 +87,7 @@ namespace PRG.EVA01.SeaBattle.Services
                 baseResult.Message = "MISS";
                 baseResult.StatusClass = "text-warning";
             }
-
+// create new log entry
             var log = new GameLog
             {
                 GameId = game.Id,
@@ -98,6 +105,7 @@ namespace PRG.EVA01.SeaBattle.Services
             return baseResult;
         }
 
+// get the info from games that are created by the user or if admin all games
         private async Task<Game?> GetGameAsync(int gameId, string? userId, bool isAdmin)
         {
             var query = _context.Games
@@ -113,6 +121,7 @@ namespace PRG.EVA01.SeaBattle.Services
             return await query.FirstOrDefaultAsync(g => g.Id == gameId);
         }
 
+// illegal attempt!!!! 
         private static ThrowBombResult SetIllegalAttempt(ThrowBombResult result)
         {
             result.Message = "illegale poging";
@@ -121,6 +130,7 @@ namespace PRG.EVA01.SeaBattle.Services
             return result;
         }
 
+// letter check
         private static bool IsValidLetter(string? letter)
         {
             if (string.IsNullOrEmpty(letter) || letter.Length != 1)
@@ -132,6 +142,7 @@ namespace PRG.EVA01.SeaBattle.Services
             return letterChar >= 'A' && letterChar <= 'T';
         }
 
+// number check
         private static bool IsValidNumber(string? number, out int numberValue)
         {
             numberValue = 0;

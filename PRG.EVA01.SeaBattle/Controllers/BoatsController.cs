@@ -24,6 +24,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(boats);
         }
 
+// Get details by id
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -41,6 +42,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(boat);
         }
 
+// check to see if there are games and free locations 
         public async Task<IActionResult> Create()
         {
             var games = await _dataService.GetGamesForSelectAsync();
@@ -60,6 +62,8 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View();
         }
 
+
+// create boat , only accept certain data from the form (id, gameid, locationid, status)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,GameId,LocationId,Status")] Boat boat)
@@ -104,6 +108,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(boat);
         }
 
+// edit boat
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -121,6 +126,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(boat);
         }
 
+// edit boat, only accept certain data from the form (id, gameid, locationid, status)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,GameId,LocationId,Status")] Boat boat)
@@ -152,6 +158,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(boat);
         }
 
+// delete boat
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -169,6 +176,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(boat);
         }
 
+// confirm delete boat
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -177,16 +185,18 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+// populate selections for create and edit views
         private async Task<bool> PopulateSelectionsAsync(int? selectedGameId = null, int? selectedLocationId = null, int? currentBoatId = null)
         {
             var games = await _dataService.GetGamesForSelectAsync();
             var locations = await _dataService.GetLocationsAsync();
 
+// filter loc's (free or being edited)
             var availableLocations = locations
                 .Where(l => l.Boat == null || (currentBoatId.HasValue && l.Boat != null && l.Boat.Id == currentBoatId.Value))
                 .OrderBy(l => l.Id)
                 .ToList();
-
+// build the dropdowns
             ViewData["GameId"] = new SelectList(games, "Id", "Id", selectedGameId);
             ViewData["LocationId"] = new SelectList(availableLocations, "Id", "Id", selectedLocationId);
 

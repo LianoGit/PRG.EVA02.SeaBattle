@@ -23,6 +23,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(locations);
         }
 
+// get details by id
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,6 +47,8 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View();
         }
 
+
+// create location , only accept certain data from the form (id, letter, number, gameid)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Letter,Number,GameId")] Location location)

@@ -11,6 +11,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View();
         }
 
+// helps load faster
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

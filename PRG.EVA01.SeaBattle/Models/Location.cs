@@ -10,6 +10,8 @@ namespace PRG.EVA01.SeaBattle.Models
         public string Number { get; set; } = string.Empty;
 
         public int GameId { get; set; }
+        
+// ValidateNever basically means dont fact check :)
         [ValidateNever]
         public Game Game { get; set; } = null!;
 

@@ -21,6 +21,8 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return RedirectToAction("Index", "Games");
         }
 
+
+// Get the game and check if the user is allowed to play it, if not return forbid
         [HttpGet]
         public async Task<IActionResult> ThrowBomb(int gameId)
         {
@@ -37,6 +39,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
             return View(result.Game);
         }
 
+// Post the throw bomb action, check if the user is allowed to play it, if not return forbid
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThrowBomb(int gameId, string letter, string number)

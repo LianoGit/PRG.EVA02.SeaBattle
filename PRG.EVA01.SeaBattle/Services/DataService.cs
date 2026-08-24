@@ -16,6 +16,7 @@ namespace PRG.EVA01.SeaBattle.Services
             _httpClient = new HttpClient { BaseAddress = new Uri("https://mgp32-api.azurewebsites.net/") };
         }
 
+// get the info from games that are created by the user or if admin all games (all of them)
         public async Task<List<Game>> GetGamesAsync(string? userId, bool isAdmin)
         {
             var query = _context.Games
@@ -47,6 +48,7 @@ namespace PRG.EVA01.SeaBattle.Services
             return await query.FirstOrDefaultAsync(g => g.Id == id);
         }
 
+// create game and then request other function to create boats for that game
         public async Task<Game> CreateGameWithBoatsAsync(string playerName, string userId, int boatCount)
         {
             var game = new Game
@@ -243,6 +245,7 @@ namespace PRG.EVA01.SeaBattle.Services
             return await _context.Games.OrderBy(g => g.Id).ToListAsync();
         }
 
+// create boats for the game (using the random location API )
         private async Task CreateBoatsForGameAsync(int gameId, int amount)
         {
             const string endpoint = "randomlocation/get/6";
@@ -294,7 +297,7 @@ namespace PRG.EVA01.SeaBattle.Services
                 }
                 catch
                 {
-                    // api is flaky sometimes, just try again
+                    // Ignore 
                 }
             }
 
