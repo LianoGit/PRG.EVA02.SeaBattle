@@ -36,7 +36,7 @@ steps:
 - task: AzureRmWebAppDeployment@5
   inputs:
     ConnectionType: 'AzureRM'
-    azureSubscription: 'Azure-Seabattle'
+    azureSubscription: 'Azure subscription 1'
     appType: 'webApp'
     WebAppName: 'liano-seabattle'
     packageForLinux: '$(Build.ArtifactStagingDirectory)\WebApp.zip'
