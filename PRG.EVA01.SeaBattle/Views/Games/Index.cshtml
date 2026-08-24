@@ -1,0 +1,42 @@
+@model IEnumerable<PRG.EVA01.SeaBattle.Models.Game>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StartedPlayingOn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayerName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartedPlayingOn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerName)
+            </td>
+            <td>
+                <a asp-controller="SeaBattle" asp-action="ThrowBomb" asp-route-gameId="@item.Id">Edit</a> |
+                <a asp-controller="SeaBattle" asp-action="ThrowBomb" asp-route-gameId="@item.Id">Details</a> |
+                <a asp-controller="GameLogs" asp-action="Index" asp-route-gameId="@item.Id">Logs</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

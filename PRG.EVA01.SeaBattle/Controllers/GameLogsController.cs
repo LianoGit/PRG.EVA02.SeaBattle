@@ -1,24 +1,29 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PRG.EVA01.SeaBattle.Data;
-using PRG.EVA01.SeaBattle.Models;
+using PRG.EVA01.SeaBattle.Services;
 
 namespace PRG.EVA01.SeaBattle.Controllers
 {
     public class GameLogsController : Controller
     {
-        private readonly SeaBattleDbContext _context;
+        private readonly IDataService _dataService;
 
-        public GameLogsController(SeaBattleDbContext context)
+        public GameLogsController(IDataService dataService)
         {
-            _context = context;
+            _dataService = dataService;
         }
 
         // GET: GameLogs
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? gameId)
         {
-            var logs = await _context.GameLogs.ToListAsync();
+            if (gameId.HasValue)
+            {
+                ViewData["GameId"] = gameId.Value;
+            }
+
+            var logs = await _dataService.GetGameLogsAsync(gameId);
+
             return View(logs);
         }
 
@@ -27,7 +32,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
         {
             if (id == null) return NotFound();
 
-            var gameLog = await _context.GameLogs.FirstOrDefaultAsync(m => m.Id == id);
+            var gameLog = await _dataService.GetGameLogByIdAsync(id.Value);
             if (gameLog == null) return NotFound();
 
             return View(gameLog);
@@ -38,7 +43,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
         {
             if (id == null) return NotFound();
 
-            var gameLog = await _context.GameLogs.FirstOrDefaultAsync(m => m.Id == id);
+            var gameLog = await _dataService.GetGameLogByIdAsync(id.Value);
             if (gameLog == null) return NotFound();
 
             return View(gameLog);
@@ -49,12 +54,7 @@ namespace PRG.EVA01.SeaBattle.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var gameLog = await _context.GameLogs.FindAsync(id);
-            if (gameLog != null)
-            {
-                _context.GameLogs.Remove(gameLog);
-                await _context.SaveChangesAsync();
-            }
+            await _dataService.DeleteGameLogAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }
